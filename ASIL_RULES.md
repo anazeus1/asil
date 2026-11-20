@@ -88,5 +88,42 @@ opencode pair --remote  # for remote pairing
 
 ---
 
+## Cloud & Infrastructure Rules (OCI)
+
+### OCI Console Navigation
+- **Never guess** cloud console UI buttons or menu paths from memory
+- When troubleshooting OCI, **verify state using `oci` CLI** (`oci network subnet get`, `oci compute instance list-vnics`) or check official docs before proposing fixes
+- Use Browse MCP to navigate console when needed, but prefer CLI for state verification
+
+### Hard OCI Constraints (IMMUTABLE)
+1. **Subnet Access Type** (Public vs Private / `ProhibitPublicIpOnVnic`) is **IMMUTABLE after creation**
+   - If subnet created as Private → CANNOT change to Public
+   - Fix: Create new Public subnet + new instance
+
+2. **Primary VNICs** cannot be moved to different subnet or detached from instance
+   - Fix: Create new instance in correct subnet
+
+3. **Public IPs require ALL THREE**:
+   - Public Subnet (access type = Public)
+   - Route Table rule: `0.0.0.0/0` → Internet Gateway
+   - Security List / NSG ingress rules for required ports
+
+### OCI Verification Commands
+```bash
+# Check subnet access type
+oci network subnet get --subnet-id <ocid> --query "data.\"prohibit-public-ip-on-vnic\""
+
+# List instance VNICs
+oci compute instance list-vnics --instance-id <ocid>
+
+# Check route table for Internet Gateway
+oci network route-table get --route-table-id <ocid>
+
+# Check security list rules
+oci network security-list get --security-list-id <ocid>
+```
+
+---
+
 **Last Updated**: 2026-11-20
-**Version**: 1.0
+**Version**: 1.1

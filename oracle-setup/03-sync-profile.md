@@ -84,6 +84,22 @@ journalctl --user -u opencode-asil -f
 
 You should see Browse MCP connecting to Brave with your profile.
 
+## Verify Public IP & Subnet (OCI CLI)
+
+```bash
+# On VM - verify subnet is Public (prohibit-public-ip-on-vnic = false)
+oci network subnet get --subnet-id $(oci network vnic list --compartment-id $(oci iam compartment list --query 'data[0].id' --raw-output) --query 'data[0]."subnet-id"' --raw-output) --query "data.\"prohibit-public-ip-on-vnic\""
+# Must return: false
+
+# Verify instance has public IP
+oci compute instance list-vnics --instance-id $(oci compute instance list --compartment-id $(oci iam compartment list --query 'data[0].id' --raw-output) --query 'data[0].id' --raw-output) --query 'data[0]."public-ip"'
+# Returns: "xxx.xxx.xxx.xxx"
+
+# Verify route table has Internet Gateway route
+oci network route-table get --route-table-id $(oci network vcn list --compartment-id $(oci iam compartment list --query 'data[0].id' --raw-output) --query 'data[0]."default-route-table-id"' --raw-output) --query 'data."route-rules"[?destination=="0.0.0.0/0"].{dest:destination, target:target}'
+# Must show target = Internet Gateway OCID
+```
+
 ---
 
 ## Troubleshooting
