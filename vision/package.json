@@ -1,0 +1,15 @@
+{
+  "name": "asil-vision",
+  "version": "1.0.0",
+  "description": "Vision analysis for Asil Agent using NVIDIA Nemotron VL",
+  "main": "analyze.js",
+  "type": "module",
+  "scripts": {
+    "analyze": "node analyze.js",
+    "test": "node analyze.js test-image.png \"Describe this image\""
+  },
+  "dependencies": {},
+  "keywords": ["vision", "vlm", "nvidia", "nemotron", "asil"],
+  "author": "Asil Agent",
+  "license": "MIT"
+}
